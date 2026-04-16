@@ -14,8 +14,7 @@
 
 <script>
 function adicionar() {
-  let input = document.getElementById("cliente");
-  let nome = input.value;
+  let nome = document.getElementById("cliente").value;
 
   if (nome === "") {
     alert("Digite um nome!");
@@ -24,12 +23,22 @@ function adicionar() {
 
   let lista = document.getElementById("lista");
 
+  // cria item
   let item = document.createElement("li");
-  item.innerText = nome;
+  item.innerText = nome + " ";
 
+  // botão de excluir
+  let botao = document.createElement("button");
+  botao.innerText = "Excluir";
+
+  botao.onclick = function () {
+    lista.removeChild(item);
+  };
+
+  item.appendChild(botao);
   lista.appendChild(item);
 
-  input.value = "";
+  document.getElementById("cliente").value = "";
 }
 </script>
 
