@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Oximar Sistema</title>
+<title>Oximar - Sistema de Clientes</title>
 
 <style>
 body {
@@ -11,7 +11,7 @@ body {
   background: #f2f2f2;
 }
 
-input, select, button {
+input, button {
   padding: 10px;
   margin: 5px;
 }
@@ -23,162 +23,87 @@ button {
   cursor: pointer;
 }
 
-table {
-  margin: auto;
-  width: 95%;
-  border-collapse: collapse;
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
   background: white;
-}
-
-th, td {
-  border: 1px solid #ccc;
+  margin: 10px auto;
   padding: 10px;
-}
-
-th {
-  background: #0a7cff;
-  color: white;
-}
-
-.vencido {
-  background: #ffcccc;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Oximar - Sistema Completo</h1>
+<h1>Oximar - Cadastro de Clientes</h1>
 
-<!-- CADASTRO DE CLIENTE -->
-<h2>Clientes</h2>
-<input id="novoCliente" placeholder="Nome do cliente">
-<button onclick="cadastrarCliente()">Cadastrar</button>
+<input id="nome" placeholder="Nome do cliente">
+<button onclick="salvarCliente()">Salvar</button>
 
-<select id="clienteSelect">
-  <option value="">Selecione o cliente</option>
-</select>
-
-<!-- PRODUTOS -->
-<h2>Produtos</h2>
-
-<select id="produto" onchange="definirPreco()">
-  <option value="">Selecione o produto</option>
-  <option value="50">Cilindro de Oxigênio</option>
-  <option value="20">Máscara</option>
-  <option value="35">Regulador</option>
-  <option value="15">Umidificador</option>
-</select>
-
-<input id="quantidade" type="number" min="1" placeholder="Quantidade" oninput="calcularTotal()">
-<input id="preco" placeholder="Preço" readonly>
-<input id="total" placeholder="Total" readonly>
-<input id="validade" type="date">
-
-<button onclick="adicionar()">Adicionar</button>
-
-<!-- TABELA -->
-<table id="tabela">
-<tr>
-  <th>Cliente</th>
-  <th>Produto</th>
-  <th>Qtd</th>
-  <th>Preço</th>
-  <th>Total</th>
-  <th>Validade</th>
-  <th>Status</th>
-  <th>Ação</th>
-</tr>
-</table>
+<h2>Clientes cadastrados</h2>
+<ul id="lista"></ul>
 
 <script>
+// 🔥 COLE AQUI A URL DO SEU FIREBASE
+const dbURL = "COLE_AQUI_SUA_URL_DO_FIREBASE";
 
-// 🔥 CADASTRAR CLIENTE
-function cadastrarCliente() {
-  let nome = document.getElementById("novoCliente").value;
+// 🔥 SALVAR CLIENTE
+function salvarCliente() {
+  let nome = document.getElementById("nome").value;
 
   if (!nome) {
     alert("Digite um nome!");
     return;
   }
 
-  let select = document.getElementById("clienteSelect");
-
-  let option = document.createElement("option");
-  option.text = nome;
-
-  select.add(option);
-
-  document.getElementById("novoCliente").value = "";
+  fetch(dbURL + "/clientes.json", {
+    method: "POST",
+    body: JSON.stringify({
+      nome: nome
+    })
+  }).then(() => {
+    document.getElementById("nome").value = "";
+    carregarClientes();
+  });
 }
 
-// 🔥 PREÇO AUTOMÁTICO
-function definirPreco() {
-  let preco = document.getElementById("produto").value;
-  document.getElementById("preco").value = preco ? "R$ " + preco : "";
-  calcularTotal();
+// 🔥 CARREGAR CLIENTES
+function carregarClientes() {
+  fetch(dbURL + "/clientes.json")
+    .then(res => res.json())
+    .then(data => {
+      let lista = document.getElementById("lista");
+      lista.innerHTML = "";
+
+      for (let id in data) {
+        let li = document.createElement("li");
+
+        li.innerText = data[id].nome;
+
+        let btn = document.createElement("button");
+        btn.innerText = "Excluir";
+
+        btn.onclick = function () {
+          fetch(dbURL + "/clientes/" + id + ".json", {
+            method: "DELETE"
+          }).then(() => carregarClientes());
+        };
+
+        li.appendChild(btn);
+        lista.appendChild(li);
+      }
+    });
 }
 
-// 🔥 TOTAL
-function calcularTotal() {
-  let preco = document.getElementById("produto").value;
-  let qtd = document.getElementById("quantidade").value;
-
-  if (preco && qtd) {
-    document.getElementById("total").value = "R$ " + (preco * qtd);
-  }
-}
-
-// 🔥 ADICIONAR NA TABELA
-function adicionar() {
-  let cliente = document.getElementById("clienteSelect").value;
-  let produtoSelect = document.getElementById("produto");
-  let produtoNome = produtoSelect.options[produtoSelect.selectedIndex].text;
-  let preco = produtoSelect.value;
-  let qtd = document.getElementById("quantidade").value;
-  let validade = document.getElementById("validade").value;
-
-  if (!cliente || !preco || !qtd) {
-    alert("Preencha tudo!");
-    return;
-  }
-
-  let tabela = document.getElementById("tabela");
-  let linha = tabela.insertRow();
-
-  // validade vencida
-  let hoje = new Date();
-  let dataValidade = new Date(validade);
-
-  let status = "OK";
-  if (validade && dataValidade < hoje) {
-    status = "Vencido";
-    linha.classList.add("vencido");
-  }
-
-  linha.insertCell(0).innerText = cliente;
-  linha.insertCell(1).innerText = produtoNome;
-  linha.insertCell(2).innerText = qtd;
-  linha.insertCell(3).innerText = "R$ " + preco;
-  linha.insertCell(4).innerText = "R$ " + (preco * qtd);
-  linha.insertCell(5).innerText = validade;
-  linha.insertCell(6).innerText = status;
-
-  let botao = document.createElement("button");
-  botao.innerText = "Excluir";
-
-  botao.onclick = function () {
-    tabela.deleteRow(linha.rowIndex);
-  };
-
-  linha.insertCell(7).appendChild(botao);
-
-  // limpar
-  document.getElementById("quantidade").value = "";
-  document.getElementById("preco").value = "";
-  document.getElementById("total").value = "";
-  document.getElementById("validade").value = "";
-}
+carregarClientes();
 </script>
 
 </body>
