@@ -50,12 +50,22 @@ th {
 
 <h1>Oximar - Sistema Completo</h1>
 
-<input id="cliente" placeholder="Cliente">
+<!-- 🔹 CADASTRO DE CLIENTE -->
+<h2>Cadastrar Cliente</h2>
+<input id="novoCliente" placeholder="Nome do cliente">
+<button onclick="cadastrarCliente()">Cadastrar</button>
+
+<!-- 🔹 SELECIONAR CLIENTE -->
+<h2>Registrar Produto</h2>
+
+<select id="clienteSelect">
+  <option value="">Selecione o cliente</option>
+</select>
 
 <select id="produto" onchange="definirPreco()">
   <option value="">Selecione o produto</option>
   <option value="50">Cilindro de Oxigênio</option>
-  <option value="20">Máscara de Oxigênio</option>
+  <option value="20">Máscara</option>
   <option value="35">Regulador</option>
   <option value="15">Umidificador</option>
 </select>
@@ -81,37 +91,52 @@ th {
 </table>
 
 <script>
-// definir preço automático
-function definirPreco() {
-  let select = document.getElementById("produto");
-  let preco = select.value;
+// 🔥 CADASTRAR CLIENTE
+function cadastrarCliente() {
+  let nome = document.getElementById("novoCliente").value;
 
+  if (!nome) {
+    alert("Digite um nome!");
+    return;
+  }
+
+  let select = document.getElementById("clienteSelect");
+
+  let option = document.createElement("option");
+  option.text = nome;
+
+  select.add(option);
+
+  document.getElementById("novoCliente").value = "";
+}
+
+// 🔥 PREÇO AUTOMÁTICO
+function definirPreco() {
+  let preco = document.getElementById("produto").value;
   document.getElementById("preco").value = preco ? "R$ " + preco : "";
   calcularTotal();
 }
 
-// calcular total
+// 🔥 TOTAL
 function calcularTotal() {
   let preco = document.getElementById("produto").value;
-  let quantidade = document.getElementById("quantidade").value;
+  let qtd = document.getElementById("quantidade").value;
 
-  if (preco && quantidade) {
-    let total = preco * quantidade;
-    document.getElementById("total").value = "R$ " + total;
+  if (preco && qtd) {
+    document.getElementById("total").value = "R$ " + (preco * qtd);
   }
 }
 
-// adicionar na tabela
+// 🔥 ADICIONAR NA TABELA
 function adicionar() {
-  let cliente = document.getElementById("cliente").value;
+  let cliente = document.getElementById("clienteSelect").value;
   let produtoSelect = document.getElementById("produto");
   let produtoNome = produtoSelect.options[produtoSelect.selectedIndex].text;
   let preco = produtoSelect.value;
-  let quantidade = document.getElementById("quantidade").value;
-  let total = preco * quantidade;
+  let qtd = document.getElementById("quantidade").value;
   let validade = document.getElementById("validade").value;
 
-  if (!cliente || !produtoSelect.value || !quantidade) {
+  if (!cliente || !preco || !qtd) {
     alert("Preencha tudo!");
     return;
   }
@@ -119,12 +144,10 @@ function adicionar() {
   let tabela = document.getElementById("tabela");
   let linha = tabela.insertRow();
 
-  // verificar validade
   let hoje = new Date();
   let dataValidade = new Date(validade);
 
   let status = "OK";
-
   if (validade && dataValidade < hoje) {
     status = "Vencido";
     linha.classList.add("vencido");
@@ -132,13 +155,12 @@ function adicionar() {
 
   linha.insertCell(0).innerText = cliente;
   linha.insertCell(1).innerText = produtoNome;
-  linha.insertCell(2).innerText = quantidade;
+  linha.insertCell(2).innerText = qtd;
   linha.insertCell(3).innerText = "R$ " + preco;
-  linha.insertCell(4).innerText = "R$ " + total;
+  linha.insertCell(4).innerText = "R$ " + (preco * qtd);
   linha.insertCell(5).innerText = validade;
   linha.insertCell(6).innerText = status;
 
-  // botão excluir
   let botao = document.createElement("button");
   botao.innerText = "Excluir";
 
@@ -148,9 +170,7 @@ function adicionar() {
 
   linha.insertCell(7).appendChild(botao);
 
-  // limpar campos
-  document.getElementById("cliente").value = "";
-  document.getElementById("produto").value = "";
+  // limpar
   document.getElementById("quantidade").value = "";
   document.getElementById("preco").value = "";
   document.getElementById("total").value = "";
