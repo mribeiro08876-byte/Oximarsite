@@ -1,87 +1,35 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Oximar</title>
-
-<style>
-body {
-  font-family: Arial;
-  text-align: center;
-  background: #f2f2f2;
-}
-
-input, button {
-  padding: 10px;
-  margin: 5px;
-}
-
-button {
-  background: #0a7cff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-table {
-  margin: auto;
-  width: 90%;
-  border-collapse: collapse;
-  background: white;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-
-th {
-  background: #0a7cff;
-  color: white;
-}
-</style>
+  <title>Oximar</title>
 </head>
-
 <body>
 
-<h1>Oximar - Controle de Clientes</h1>
+<h1>Oximar</h1>
 
-<input id="cliente" placeholder="Cliente">
-<input id="pegou" placeholder="O que pegou">
-<input id="local" placeholder="Localização">
-
+<input id="cliente" placeholder="Nome do cliente">
 <button onclick="adicionar()">Adicionar</button>
 
-<table id="tabela">
-<tr>
-<th>Cliente</th>
-<th>Item</th>
-<th>Localização</th>
-</tr>
-</table>
+<ul id="lista"></ul>
 
 <script>
 function adicionar() {
-  let tabela = document.getElementById("tabela");
+  let input = document.getElementById("cliente");
+  let nome = input.value;
 
-  let cliente = document.getElementById("cliente").value;
-  let item = document.getElementById("pegou").value;
-  let local = document.getElementById("local").value;
-
-  if (cliente === "") {
-    alert("Digite o nome do cliente!");
+  if (nome === "") {
+    alert("Digite um nome!");
     return;
   }
 
-  let linha = tabela.insertRow();
+  let lista = document.getElementById("lista");
 
-  linha.insertCell(0).innerText = cliente;
-  linha.insertCell(1).innerText = item;
-  linha.insertCell(2).innerText = local;
+  let item = document.createElement("li");
+  item.innerText = nome;
 
-  document.getElementById("cliente").value = "";
-  document.getElementById("pegou").value = "";
-  document.getElementById("local").value = "";
+  lista.appendChild(item);
+
+  input.value = "";
 }
 </script>
 
