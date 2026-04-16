@@ -11,7 +11,7 @@ body {
   background: #f2f2f2;
 }
 
-input, button {
+input, select, button {
   padding: 10px;
   margin: 5px;
 }
@@ -25,7 +25,7 @@ button {
 
 table {
   margin: auto;
-  width: 90%;
+  width: 95%;
   border-collapse: collapse;
   background: white;
 }
@@ -39,48 +39,106 @@ th {
   background: #0a7cff;
   color: white;
 }
+
+.vencido {
+  background: #ffcccc;
+}
 </style>
 </head>
 
 <body>
 
-<h1>Oximar - Controle de Clientes</h1>
+<h1>Oximar - Sistema Completo</h1>
 
 <input id="cliente" placeholder="Cliente">
-<input id="item" placeholder="O que pegou">
-<input id="local" placeholder="Localização">
+
+<select id="produto" onchange="definirPreco()">
+  <option value="">Selecione o produto</option>
+  <option value="50">Cilindro de Oxigênio</option>
+  <option value="20">Máscara de Oxigênio</option>
+  <option value="35">Regulador</option>
+  <option value="15">Umidificador</option>
+</select>
+
+<input id="quantidade" type="number" min="1" placeholder="Quantidade" oninput="calcularTotal()">
+<input id="preco" placeholder="Preço" readonly>
+<input id="total" placeholder="Total" readonly>
+<input id="validade" type="date">
 
 <button onclick="adicionar()">Adicionar</button>
 
 <table id="tabela">
 <tr>
   <th>Cliente</th>
-  <th>Item</th>
-  <th>Localização</th>
+  <th>Produto</th>
+  <th>Qtd</th>
+  <th>Preço</th>
+  <th>Total</th>
+  <th>Validade</th>
+  <th>Status</th>
   <th>Ação</th>
 </tr>
 </table>
 
 <script>
+// definir preço automático
+function definirPreco() {
+  let select = document.getElementById("produto");
+  let preco = select.value;
+
+  document.getElementById("preco").value = preco ? "R$ " + preco : "";
+  calcularTotal();
+}
+
+// calcular total
+function calcularTotal() {
+  let preco = document.getElementById("produto").value;
+  let quantidade = document.getElementById("quantidade").value;
+
+  if (preco && quantidade) {
+    let total = preco * quantidade;
+    document.getElementById("total").value = "R$ " + total;
+  }
+}
+
+// adicionar na tabela
 function adicionar() {
-  let tabela = document.getElementById("tabela");
-
   let cliente = document.getElementById("cliente").value;
-  let item = document.getElementById("item").value;
-  let local = document.getElementById("local").value;
+  let produtoSelect = document.getElementById("produto");
+  let produtoNome = produtoSelect.options[produtoSelect.selectedIndex].text;
+  let preco = produtoSelect.value;
+  let quantidade = document.getElementById("quantidade").value;
+  let total = preco * quantidade;
+  let validade = document.getElementById("validade").value;
 
-  if (cliente === "") {
-    alert("Digite o nome do cliente!");
+  if (!cliente || !produtoSelect.value || !quantidade) {
+    alert("Preencha tudo!");
     return;
   }
 
+  let tabela = document.getElementById("tabela");
   let linha = tabela.insertRow();
 
-  linha.insertCell(0).innerText = cliente;
-  linha.insertCell(1).innerText = item;
-  linha.insertCell(2).innerText = local;
+  // verificar validade
+  let hoje = new Date();
+  let dataValidade = new Date(validade);
 
-  // 🔥 BOTÃO EXCLUIR
+  let status = "OK";
+
+  if (validade && dataValidade < hoje) {
+    status = "Vencido";
+    linha.classList.add("vencido");
+  }
+
+  linha.insertCell(0).innerText = cliente;
+  linha.insertCell(1).innerText = produtoNome;
+  linha.insertCell(2).innerText = quantidade;
+  linha.insertCell(3).innerText = "R$ " + preco;
+  linha.insertCell(4).innerText = "R$ " + total;
+  linha.insertCell(5).innerText = validade;
+  linha.insertCell(6).innerText = status;
+
+  // botão excluir
   let botao = document.createElement("button");
   botao.innerText = "Excluir";
 
@@ -88,12 +146,15 @@ function adicionar() {
     tabela.deleteRow(linha.rowIndex);
   };
 
-  linha.insertCell(3).appendChild(botao);
+  linha.insertCell(7).appendChild(botao);
 
   // limpar campos
   document.getElementById("cliente").value = "";
-  document.getElementById("item").value = "";
-  document.getElementById("local").value = "";
+  document.getElementById("produto").value = "";
+  document.getElementById("quantidade").value = "";
+  document.getElementById("preco").value = "";
+  document.getElementById("total").value = "";
+  document.getElementById("validade").value = "";
 }
 </script>
 
