@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Oximar</title>
+<title>Oximar Sistema</title>
 
 <style>
 body {
@@ -50,17 +50,17 @@ th {
 
 <h1>Oximar - Sistema Completo</h1>
 
-<!-- 🔹 CADASTRO DE CLIENTE -->
-<h2>Cadastrar Cliente</h2>
+<!-- CADASTRO DE CLIENTE -->
+<h2>Clientes</h2>
 <input id="novoCliente" placeholder="Nome do cliente">
 <button onclick="cadastrarCliente()">Cadastrar</button>
-
-<!-- 🔹 SELECIONAR CLIENTE -->
-<h2>Registrar Produto</h2>
 
 <select id="clienteSelect">
   <option value="">Selecione o cliente</option>
 </select>
+
+<!-- PRODUTOS -->
+<h2>Produtos</h2>
 
 <select id="produto" onchange="definirPreco()">
   <option value="">Selecione o produto</option>
@@ -77,6 +77,7 @@ th {
 
 <button onclick="adicionar()">Adicionar</button>
 
+<!-- TABELA -->
 <table id="tabela">
 <tr>
   <th>Cliente</th>
@@ -91,6 +92,7 @@ th {
 </table>
 
 <script>
+
 // 🔥 CADASTRAR CLIENTE
 function cadastrarCliente() {
   let nome = document.getElementById("novoCliente").value;
@@ -144,6 +146,7 @@ function adicionar() {
   let tabela = document.getElementById("tabela");
   let linha = tabela.insertRow();
 
+  // validade vencida
   let hoje = new Date();
   let dataValidade = new Date(validade);
 
