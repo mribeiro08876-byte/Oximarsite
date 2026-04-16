@@ -1,44 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <title>Oximar</title>
+<meta charset="UTF-8">
+<title>Oximar</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f2f2f2;
+}
+
+input, button {
+  padding: 10px;
+  margin: 5px;
+}
+
+button {
+  background: #0a7cff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+table {
+  margin: auto;
+  width: 90%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+th {
+  background: #0a7cff;
+  color: white;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Oximar</h1>
+<h1>Oximar - Controle de Clientes</h1>
 
-<input id="cliente" placeholder="Nome do cliente">
+<input id="cliente" placeholder="Cliente">
+<input id="item" placeholder="O que pegou">
+<input id="local" placeholder="Localização">
+
 <button onclick="adicionar()">Adicionar</button>
 
-<ul id="lista"></ul>
+<table id="tabela">
+<tr>
+  <th>Cliente</th>
+  <th>Item</th>
+  <th>Localização</th>
+  <th>Ação</th>
+</tr>
+</table>
 
 <script>
 function adicionar() {
-  let nome = document.getElementById("cliente").value;
+  let tabela = document.getElementById("tabela");
 
-  if (nome === "") {
-    alert("Digite um nome!");
+  let cliente = document.getElementById("cliente").value;
+  let item = document.getElementById("item").value;
+  let local = document.getElementById("local").value;
+
+  if (cliente === "") {
+    alert("Digite o nome do cliente!");
     return;
   }
 
-  let lista = document.getElementById("lista");
+  let linha = tabela.insertRow();
 
-  // cria item
-  let item = document.createElement("li");
-  item.innerText = nome + " ";
+  linha.insertCell(0).innerText = cliente;
+  linha.insertCell(1).innerText = item;
+  linha.insertCell(2).innerText = local;
 
-  // botão de excluir
+  // 🔥 BOTÃO EXCLUIR
   let botao = document.createElement("button");
   botao.innerText = "Excluir";
 
   botao.onclick = function () {
-    lista.removeChild(item);
+    tabela.deleteRow(linha.rowIndex);
   };
 
-  item.appendChild(botao);
-  lista.appendChild(item);
+  linha.insertCell(3).appendChild(botao);
 
+  // limpar campos
   document.getElementById("cliente").value = "";
+  document.getElementById("item").value = "";
+  document.getElementById("local").value = "";
 }
 </script>
 
